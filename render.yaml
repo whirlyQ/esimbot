@@ -1,6 +1,6 @@
 services:
   - type: worker
-    name: esimbot
+    name: esimbot-worker
     env: python
     buildCommand: pip install -r requirements.txt
     startCommand: python bot.py
@@ -8,4 +8,5 @@ services:
       - key: TELEGRAM_BOT_TOKEN
         sync: false
       - key: AIRALO_API_KEY
-        sync: false 
+        sync: false
+    autoDeploy: true 
