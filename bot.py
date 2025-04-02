@@ -89,15 +89,16 @@ async def handle_service_selection(update: Update, context: ContextTypes.DEFAULT
         return
     
     # Handle regular service selection
-    context.user_data['selected_service'] = query.data
-    context.user_data['awaiting_payment'] = True
-    
-    payment_message = (
-        f"Selected service: {query.data}\n\n"
-        "Please provide your payment details to proceed.\n"
-        "You can pay with supported cryptocurrencies."
-    )
-    await query.message.reply_text(payment_message)
+    if query.data.startswith('service'):
+        context.user_data['selected_service'] = query.data
+        context.user_data['awaiting_payment'] = True
+        
+        payment_message = (
+            f"Selected service: {query.data}\n\n"
+            "Please provide your payment details to proceed.\n"
+            "You can pay with supported cryptocurrencies."
+        )
+        await query.message.reply_text(payment_message)
 
 async def handle_iccid_input(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle ICCID input and fetch data."""
