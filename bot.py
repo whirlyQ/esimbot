@@ -193,6 +193,14 @@ async def handle_topup_selection(update: Update, context: ContextTypes.DEFAULT_T
     if not query.data.startswith('topup_'):
         return
 
+    # Check if this is a topup from usage message or welcome message
+    if query.data in ['topup_flow', 'topup_usage']:
+        context.user_data['awaiting_iccid'] = True
+        await query.message.reply_text(
+            "Please enter your eSIM ICCID to view available top-up packages."
+        )
+        return
+
     # Check if this is a topup from usage message
     if query.data.startswith('topup_usage_'):
         iccid = query.data.split('_')[2]
