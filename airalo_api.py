@@ -156,4 +156,28 @@ class AiraloAPI:
         
         # Cache the response
         self.usage_cache[cache_key] = data
-        return data 
+        return data
+
+    async def submit_topup_order(self, package_id: str, iccid: str, description: str = None):
+        """Submit a topup order to Airalo."""
+        if not package_id:
+            raise ValueError("Package ID cannot be empty")
+        if not iccid:
+            raise ValueError("ICCID cannot be empty")
+            
+        # Prepare the form data
+        data = {
+            'package_id': package_id,
+            'iccid': iccid
+        }
+        
+        # Add description if provided
+        if description:
+            data['description'] = description
+        else:
+            data['description'] = f"Topup ({iccid})"
+            
+        logger.info(f"Submitting topup order for ICCID {iccid} with package {package_id}")
+        
+        # Make the POST request
+        return await self._make_request('POST', "orders/topups", data=data) 
