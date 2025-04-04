@@ -4,69 +4,27 @@ import logging
 import asyncio
 import requests
 from datetime import datetime, timedelta
+from dotenv import load_dotenv
+import base64
 
 # Setup logging first
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Try to import solana-related packages, with fallbacks for missing dependencies
-try:
-    from solana.rpc.api import Client
-    from solders.pubkey import Pubkey
-    from solders.keypair import Keypair
-    from solana.transaction import Transaction
-    from solders.system_program import TransferParams, transfer
-    from solana.rpc.types import TxOpts
-    from solana.rpc.commitment import Commitment
-    from solders.instruction import Instruction, AccountMeta
-    from solders.hash import Hash
-    from base58 import b58decode, b58encode
-    logger.info("Successfully imported all solana-related packages")
-except ImportError as e:
-    logger.error(f"Error importing solana-related packages: {str(e)}")
-    logger.warning("Using mock/stub implementations for solana functionality")
-    
-    # Create minimal stub implementations for required classes
-    class MockPubkey:
-        def __init__(self, address=None):
-            self.address = address or "mock_pubkey_address"
-        
-        def __str__(self):
-            return self.address
-            
-        @classmethod
-        def from_string(cls, address_str):
-            return cls(address_str)
-    
-    class MockKeypair:
-        def __init__(self):
-            self._pubkey = MockPubkey()
-            self.secret_key = bytes([0] * 32)  # Mock 32 bytes
-        
-        def pubkey(self):
-            return self._pubkey
-            
-        @classmethod
-        def from_bytes(cls, byte_data):
-            return cls()
-    
-    # Assign mock classes to the expected names
-    Pubkey = MockPubkey
-    Keypair = MockKeypair
-    Transaction = object
-    Instruction = object
-    AccountMeta = object
-    Hash = object
-    TxOpts = object
-    Commitment = object
-    TransferParams = object
-    transfer = lambda: None
-    Client = lambda url: object()
-
-from dotenv import load_dotenv
-import base64
-
+# Load environment variables
 load_dotenv()
+
+# Import Solana modules
+from solana.rpc.api import Client
+from solders.pubkey import Pubkey
+from solders.keypair import Keypair
+from solana.transaction import Transaction
+from solders.system_program import TransferParams, transfer
+from solana.rpc.types import TxOpts
+from solana.rpc.commitment import Commitment
+from solders.instruction import Instruction, AccountMeta
+from solders.hash import Hash
+from base58 import b58decode, b58encode
 
 # Constants
 PAYMENT_TIMEOUT_MINUTES = 10

@@ -5,25 +5,6 @@ import asyncio
 import math
 import requests
 import time
-
-# Set up logging first
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.INFO
-)
-logger = logging.getLogger(__name__)
-
-# Check for fallback modules before importing solana
-try:
-    # Try to import setup_fallback and run it if available
-    import setup_fallback
-    setup_fallback.setup_fallback_modules()
-    logger.info("Fallback module setup complete")
-except ImportError:
-    logger.warning("setup_fallback.py not found, skipping fallback module setup")
-except Exception as e:
-    logger.error(f"Error setting up fallback modules: {str(e)}")
-
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, MessageHandler, filters, ContextTypes
 from airalo_api import AiraloAPI
@@ -31,6 +12,13 @@ from solana_payments import get_payment_manager, SPL_TOKEN_SYMBOL
 
 # Load environment variables
 dotenv.load_dotenv()
+
+# Configure logging
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=logging.INFO
+)
+logger = logging.getLogger(__name__)
 
 # Initialize bot token and Airalo API
 TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')

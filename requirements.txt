@@ -1,4 +1,5 @@
 # Main requirements without version conflicts
+httpx==0.23.3
 python-telegram-bot==20.8
 python-dotenv==1.0.1
 requests==2.31.0
@@ -7,6 +8,5 @@ certifi==2024.2.2
 solders==0.19.0
 base58==2.1.1
 
-# Note: httpx and solana packages are installed separately by install_deps.sh
-# to avoid dependency conflicts
+# Note: solana will be installed directly from source in the build process
 # solana==0.31.0 

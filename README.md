@@ -25,12 +25,15 @@ If you need to install manually, follow these steps:
    pip install python-telegram-bot==20.8 python-dotenv==1.0.1 requests==2.31.0 aiohttp==3.9.3 certifi==2024.2.2 solders==0.19.0 base58==2.1.1
    ```
 
-3. Install solana with no dependencies:
+3. Install solana from source:
    ```bash
-   pip install --no-deps solana==0.31.0
+   mkdir -p /tmp/solana-py
+   curl -L https://github.com/michaelhly/solana-py/archive/refs/tags/v0.31.0.tar.gz | tar -xz -C /tmp/solana-py --strip-components=1
+   cd /tmp/solana-py
+   sed -i 's/httpx>=0.23.0,<0.24.0/httpx==0.23.3/g' pyproject.toml
+   pip install -e .
+   cd -
    ```
-
-If you encounter issues with the solana package, the system will automatically use a fallback implementation.
 
 ## Environment Variables
 
