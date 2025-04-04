@@ -22,7 +22,7 @@ echo "Installing solana without dependencies..."
 pip install --no-deps solana==0.31.0
 
 # Verify solana installation
-python -c "import solana; print(f'Successfully imported solana v{solana.__version__}')"
+python -c "import solana; print('Successfully imported solana')"
 
 # Upgrade httpx for python-telegram-bot
 echo "Upgrading httpx for python-telegram-bot..."
