@@ -2,7 +2,107 @@ services:
   - type: worker
     name: esimbot-worker
     env: python
-    buildCommand: chmod +x install_deps.sh && ./install_deps.sh
+    buildCommand: |
+      # Ensure our fallback module is available
+      echo "Preparing fallback modules..."
+      
+      # Create the fallback module if it doesn't exist
+      if [ ! -f "fallback_solana.py" ]; then
+        echo 'Creating fallback solana module...'
+        cat > fallback_solana.py << 'EOL'
+"""
+Fallback solana module stub for when the real solana package can't be installed.
+This provides minimal functionality required by solana_payments.py.
+"""
+
+import logging
+logger = logging.getLogger(__name__)
+
+logger.warning("Using fallback solana module! This is a minimal implementation and not all features will work.")
+
+# Version for logging
+__version__ = "0.31.0-fallback"
+
+class rpc:
+    class api:
+        class Client:
+            def __init__(self, endpoint_url):
+                self.endpoint_url = endpoint_url
+                logger.warning(f"Created fallback solana Client with endpoint: {endpoint_url}")
+
+            def get_balance(self, pubkey):
+                logger.warning("Fallback solana: get_balance called but not implemented")
+                return {"result": {"value": 0}}
+
+    class commitment:
+        class Commitment:
+            def __init__(self, value):
+                self.value = value
+
+    class types:
+        class TxOpts:
+            def __init__(self, **kwargs):
+                self.kwargs = kwargs
+
+class transaction:
+    class Transaction:
+        def __init__(self, **kwargs):
+            self.kwargs = kwargs
+
+        def add(self, instruction):
+            pass
+
+        def sign(self, *signers):
+            pass
+
+        def serialize(self):
+            return b''
+EOL
+      fi
+      
+      # Create a direct requirements file with explicit httpx requirement
+      if [ ! -f "requirements-direct.txt" ]; then
+        echo 'Creating direct requirements file...'
+        cat > requirements-direct.txt << 'EOL'
+# Core dependencies
+httpx==0.24.1
+python-telegram-bot==20.8
+python-dotenv==1.0.1
+requests==2.31.0
+aiohttp==3.9.3
+certifi==2024.2.2
+solders==0.19.0
+base58==2.1.1
+
+# Additional dependencies
+anyio
+attrs
+cffi
+cryptography
+frozenlist
+h11
+idna
+multidict
+pycparser
+sniffio
+yarl
+EOL
+      fi
+      
+      # Create a constraints file for solana
+      echo 'Creating constraints file...'
+      cat > constraints.txt << 'EOL'
+httpx==0.24.1
+EOL
+      
+      # Install dependencies with constraints
+      echo "Installing dependencies with constraints..."
+      pip install -r requirements-direct.txt -c constraints.txt
+      
+      echo "Installing solana with constraints..."
+      pip install solana==0.31.0 -c constraints.txt || pip install --no-deps solana==0.31.0 || \
+      pip install git+https://github.com/michaelhly/solana-py.git@master -c constraints.txt || \
+      echo "Failed to install solana - will use fallback implementation"
     startCommand: python bot.py
     envVars:
       - key: TELEGRAM_BOT_TOKEN
