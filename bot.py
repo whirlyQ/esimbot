@@ -57,7 +57,6 @@ def round_price_to_95_cents(price):
     # Round down to the nearest dollar and add 0.95
     base_price = math.floor(price)
     result = base_price + 0.95
-    logger.info(f"Price rounding: {price:.2f} -> {result:.2f}")
     return result
 
 def get_token_price_usd():
@@ -249,12 +248,10 @@ async def handle_iccid_input(update: Update, context: ContextTypes.DEFAULT_TYPE)
             keyboard = []
             for package in packages:
                 # Apply price markup
-                original_price = float(package['price'])
-                logger.info(f"Package {package['id']} - Original price: ${original_price:.2f}")
+                original_price = float(package['net_price'])
                 
                 # Calculate marked up price
                 raw_marked_up = original_price * PRICE_MARKUP_MULTIPLIER
-                logger.info(f"Raw marked-up price (1.69x): ${raw_marked_up:.2f}")
                 
                 # Round to .95 cents
                 marked_up_price = round_price_to_95_cents(raw_marked_up)
@@ -325,12 +322,10 @@ async def handle_topup_selection(update: Update, context: ContextTypes.DEFAULT_T
             keyboard = []
             for package in packages:
                 # Apply price markup
-                original_price = float(package['price'])
-                logger.info(f"Package {package['id']} - Original price: ${original_price:.2f}")
+                original_price = float(package['net_price'])
                 
                 # Calculate marked up price
                 raw_marked_up = original_price * PRICE_MARKUP_MULTIPLIER
-                logger.info(f"Raw marked-up price (1.69x): ${raw_marked_up:.2f}")
                 
                 # Round to .95 cents
                 marked_up_price = round_price_to_95_cents(raw_marked_up)
@@ -359,16 +354,13 @@ async def handle_topup_selection(update: Update, context: ContextTypes.DEFAULT_T
         _, package_id, original_price, marked_up_price = callback_parts
         original_price_float = float(original_price)
         marked_up_price_float = float(marked_up_price)
-        logger.info(f"Using pre-calculated markup from callback data: Original=${original_price_float:.2f}, Markup=${marked_up_price_float:.2f}")
     else:
         # Old format with just the original price
         _, package_id, original_price = callback_parts
         original_price_float = float(original_price)
-        logger.info(f"Old format callback - Original price: ${original_price_float:.2f}")
         
         # Calculate marked up price
         raw_marked_up = original_price_float * PRICE_MARKUP_MULTIPLIER
-        logger.info(f"Raw marked-up price (1.69x): ${raw_marked_up:.2f}")
         
         # Round to .95 cents
         marked_up_price_float = round_price_to_95_cents(raw_marked_up)
