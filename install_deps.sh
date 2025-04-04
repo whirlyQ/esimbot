@@ -9,35 +9,26 @@ echo "Installing dependencies for eSIM Bot..."
 # Update pip and setuptools
 pip install --upgrade pip setuptools wheel
 
-# First install all dependencies EXCEPT python-telegram-bot
-echo "Installing base dependencies..."
-pip install python-dotenv==1.0.1 requests==2.31.0 aiohttp==3.9.3 certifi==2024.2.2 solders==0.19.0 base58==2.1.1
-
-# Install solana with specific httpx version
+# Install correct version of httpx for solana
 echo "Installing httpx compatible with solana..."
 pip install httpx==0.23.3
 
-# Manually download and install solana package
-echo "Installing solana package directly from GitHub..."
-mkdir -p /tmp/solana-py
-curl -L https://github.com/michaelhly/solana-py/archive/refs/tags/v0.31.0.tar.gz | tar -xz -C /tmp/solana-py --strip-components=1
-cd /tmp/solana-py
+# Install base dependencies
+echo "Installing base dependencies..."
+pip install python-dotenv==1.0.1 requests==2.31.0 aiohttp==3.9.3 certifi==2024.2.2 solders==0.19.0 base58==2.1.1
 
-# Edit the pyproject.toml to fix the httpx dependency
-sed -i 's/httpx>=0.23.0,<0.24.0/httpx==0.23.3/g' pyproject.toml
-
-# Install the package
-pip install -e .
-cd -
+# Install solana without dependencies
+echo "Installing solana without dependencies..."
+pip install --no-deps solana==0.31.0
 
 # Verify solana installation
 python -c "import solana; print(f'Successfully imported solana v{solana.__version__}')"
 
-# Now upgrade httpx to the version needed by python-telegram-bot
+# Upgrade httpx for python-telegram-bot
 echo "Upgrading httpx for python-telegram-bot..."
 pip install --upgrade httpx~=0.26.0
 
-# Finally install python-telegram-bot
+# Install python-telegram-bot
 echo "Installing python-telegram-bot..."
 pip install python-telegram-bot==20.8
 

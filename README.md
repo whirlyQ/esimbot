@@ -15,24 +15,19 @@ chmod +x install_deps.sh
 
 If you need to install manually, follow these steps:
 
-1. First install base dependencies:
-   ```bash
-   pip install python-dotenv==1.0.1 requests==2.31.0 aiohttp==3.9.3 certifi==2024.2.2 solders==0.19.0 base58==2.1.1
-   ```
-
-2. Install httpx at a version compatible with solana:
+1. First install httpx at a version compatible with solana:
    ```bash
    pip install httpx==0.23.3
    ```
 
-3. Install solana from source:
+2. Install base dependencies:
    ```bash
-   mkdir -p /tmp/solana-py
-   curl -L https://github.com/michaelhly/solana-py/archive/refs/tags/v0.31.0.tar.gz | tar -xz -C /tmp/solana-py --strip-components=1
-   cd /tmp/solana-py
-   sed -i 's/httpx>=0.23.0,<0.24.0/httpx==0.23.3/g' pyproject.toml
-   pip install -e .
-   cd -
+   pip install python-dotenv==1.0.1 requests==2.31.0 aiohttp==3.9.3 certifi==2024.2.2 solders==0.19.0 base58==2.1.1
+   ```
+
+3. Install solana without dependencies:
+   ```bash
+   pip install --no-deps solana==0.31.0
    ```
 
 4. Upgrade httpx for python-telegram-bot:

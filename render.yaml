@@ -1,52 +1,23 @@
 services:
-  - type: worker
-    name: esimbot-worker
+  - type: web
+    name: esimbot
     env: python
+    plan: free
     buildCommand: |
-      # Update pip and setuptools
       pip install --upgrade pip setuptools wheel
-
-      # First install all dependencies EXCEPT python-telegram-bot
-      pip install python-dotenv==1.0.1 requests==2.31.0 aiohttp==3.9.3 certifi==2024.2.2 solders==0.19.0 base58==2.1.1
-
-      # Install solana with specific httpx version
       pip install httpx==0.23.3
-
-      # Manually download and install solana package
-      echo "Installing solana package directly from GitHub..."
-      mkdir -p /tmp/solana-py
-      curl -L https://github.com/michaelhly/solana-py/archive/refs/tags/v0.31.0.tar.gz | tar -xz -C /tmp/solana-py --strip-components=1
-      cd /tmp/solana-py
-      
-      # Edit the pyproject.toml to fix the httpx dependency
-      sed -i 's/httpx>=0.23.0,<0.24.0/httpx==0.23.3/g' pyproject.toml
-      
-      # Install the package
-      pip install -e .
-      cd -
-      
-      # Verify solana installation
-      python -c "import solana; print(f'Successfully imported solana v{solana.__version__}')"
-      
-      # Now upgrade httpx to the version needed by python-telegram-bot
+      pip install python-dotenv==1.0.1 requests==2.31.0 aiohttp==3.9.3 certifi==2024.2.2 solders==0.19.0 base58==2.1.1
+      pip install --no-deps solana==0.31.0
+      python -c "import solana; print(f'Successfully imported solana')"
       pip install --upgrade httpx~=0.26.0
-      
-      # Finally install python-telegram-bot
       pip install python-telegram-bot==20.8
-      
-      # Show final package versions
-      echo "Final package versions:"
-      pip list | grep httpx
-      pip list | grep solana
-      pip list | grep python-telegram-bot
-      
-      # Create a marker file to verify build script completed successfully
-      echo "=== BUILD SCRIPT COMPLETED SUCCESSFULLY ===" > /tmp/build_success.txt
-      cat /tmp/build_success.txt
+      echo "Build completed successfully"
     startCommand: python bot.py
     envVars:
       - key: TELEGRAM_BOT_TOKEN
         sync: false
-      - key: AIRALO_API_KEY
+      - key: AIRALO_CLIENT_ID
+        sync: false
+      - key: AIRALO_CLIENT_SECRET
         sync: false
     autoDeploy: true 
