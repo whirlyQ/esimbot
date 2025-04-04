@@ -17,7 +17,14 @@ pip install httpx==0.23.3
 echo "Installing base dependencies..."
 pip install python-dotenv==1.0.1 requests==2.31.0 aiohttp==3.9.3 certifi==2024.2.2 solders==0.19.0 base58==2.1.1
 
-# Install solana without dependencies
+# Install solana dependencies
+echo "Installing solana dependencies..."
+pip install cachetools==4.2.4 
+pip install construct-typing==0.5.6
+pip install types-cachetools==4.2.10
+pip install websockets==11.0.3
+
+# Install solana without httpx dependency
 echo "Installing solana without dependencies..."
 pip install --no-deps solana==0.31.0
 
@@ -37,5 +44,7 @@ echo "Final package versions:"
 pip list | grep httpx
 pip list | grep solana
 pip list | grep python-telegram-bot
+pip list | grep cachetools
+pip list | grep websockets
 
 echo "Installation completed successfully!"
