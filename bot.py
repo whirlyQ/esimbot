@@ -47,11 +47,18 @@ token_price_cache = {
 }
 
 def round_price_to_95_cents(price):
-    """Round a price to end with .95 cents."""
-    # Round down to the nearest dollar
+    """Round a price to end with .95 cents.
+    
+    For example:
+    10.00 * 1.69 = 16.90 -> 16.95
+    5.00 * 1.69 = 8.45 -> 8.95
+    12.00 * 1.69 = 20.28 -> 20.95
+    """
+    # Round down to the nearest dollar and add 0.95
     base_price = math.floor(price)
-    # Add 0.95 to get the final price
-    return base_price + 0.95
+    result = base_price + 0.95
+    logger.info(f"Price rounding: {price:.2f} -> {result:.2f}")
+    return result
 
 def get_token_price_usd():
     """Fetch the current token price in USD from DexScreener API."""
@@ -243,10 +250,17 @@ async def handle_iccid_input(update: Update, context: ContextTypes.DEFAULT_TYPE)
             for package in packages:
                 # Apply price markup
                 original_price = float(package['price'])
-                marked_up_price = round_price_to_95_cents(original_price * PRICE_MARKUP_MULTIPLIER)
+                logger.info(f"Package {package['id']} - Original price: ${original_price:.2f}")
+                
+                # Calculate marked up price
+                raw_marked_up = original_price * PRICE_MARKUP_MULTIPLIER
+                logger.info(f"Raw marked-up price (1.69x): ${raw_marked_up:.2f}")
+                
+                # Round to .95 cents
+                marked_up_price = round_price_to_95_cents(raw_marked_up)
                 
                 # Store both the original and marked up price in the callback data
-                button_text = f"{package['title']} - ${marked_up_price}"
+                button_text = f"{package['title']} - ${marked_up_price:.2f}"
                 callback_data = f"topup_{package['id']}_{original_price}_{marked_up_price}"
                 keyboard.append([InlineKeyboardButton(button_text, callback_data=callback_data)])
 
@@ -312,10 +326,17 @@ async def handle_topup_selection(update: Update, context: ContextTypes.DEFAULT_T
             for package in packages:
                 # Apply price markup
                 original_price = float(package['price'])
-                marked_up_price = round_price_to_95_cents(original_price * PRICE_MARKUP_MULTIPLIER)
+                logger.info(f"Package {package['id']} - Original price: ${original_price:.2f}")
+                
+                # Calculate marked up price
+                raw_marked_up = original_price * PRICE_MARKUP_MULTIPLIER
+                logger.info(f"Raw marked-up price (1.69x): ${raw_marked_up:.2f}")
+                
+                # Round to .95 cents
+                marked_up_price = round_price_to_95_cents(raw_marked_up)
                 
                 # Store both the original and marked up price in the callback data
-                button_text = f"{package['title']} - ${marked_up_price}"
+                button_text = f"{package['title']} - ${marked_up_price:.2f}"
                 callback_data = f"topup_{package['id']}_{original_price}_{marked_up_price}"
                 keyboard.append([InlineKeyboardButton(button_text, callback_data=callback_data)])
 
@@ -338,11 +359,19 @@ async def handle_topup_selection(update: Update, context: ContextTypes.DEFAULT_T
         _, package_id, original_price, marked_up_price = callback_parts
         original_price_float = float(original_price)
         marked_up_price_float = float(marked_up_price)
+        logger.info(f"Using pre-calculated markup from callback data: Original=${original_price_float:.2f}, Markup=${marked_up_price_float:.2f}")
     else:
         # Old format with just the original price
         _, package_id, original_price = callback_parts
         original_price_float = float(original_price)
-        marked_up_price_float = round_price_to_95_cents(original_price_float * PRICE_MARKUP_MULTIPLIER)
+        logger.info(f"Old format callback - Original price: ${original_price_float:.2f}")
+        
+        # Calculate marked up price
+        raw_marked_up = original_price_float * PRICE_MARKUP_MULTIPLIER
+        logger.info(f"Raw marked-up price (1.69x): ${raw_marked_up:.2f}")
+        
+        # Round to .95 cents
+        marked_up_price_float = round_price_to_95_cents(raw_marked_up)
     
     # Store selected package in user data with both prices
     context.user_data['selected_package'] = {
